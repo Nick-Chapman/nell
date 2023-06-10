@@ -10,7 +10,6 @@ Explore LLVM.
 ```
 sudo apt install ninja-build
 sudo apt install clang
-sudo apt install lld
 ```
 
 #### Clone llvm-project
@@ -28,7 +27,7 @@ sudo snap install cmake --classic
 
 #### Configure and build llvm
 ```
-cmake -S llvm -B build -G Ninja -DLLVM_TARGETS_TO_BUILD=host -DCMAKE_BUILD_TYPE=MinSizeRel -DLLVM_USE_LINKER=lld
+cmake -S llvm -B build -G Ninja -DLLVM_TARGETS_TO_BUILD=host -DCMAKE_BUILD_TYPE=MinSizeRel
 cd build
 ninja
 ```
