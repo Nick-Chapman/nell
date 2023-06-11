@@ -8,6 +8,6 @@ run-%: build/%.ll
 	lli $^ 10
 
 build/%.ll: src/%.c Makefile
-	clang -Werror -emit-llvm $< -S -o $@
+	clang -O3 -Werror -emit-llvm $< -S -o $@
 
 build: ; @mkdir -p $@
