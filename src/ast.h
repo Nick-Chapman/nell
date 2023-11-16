@@ -8,7 +8,7 @@
 
 class Exp {
 public:
-  //virtual ~Exp() = default; // TODO: does what? why needed?
+  virtual ~Exp() = default;
   virtual int eval() = 0;
   virtual std::string pp() = 0;
 };

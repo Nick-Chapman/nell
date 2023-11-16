@@ -1,4 +1,7 @@
 
+#CPP = g++
+CPP = clang++
+
 top: run
 
 build: _build main.exe
@@ -11,12 +14,12 @@ objs = $(patsubst %, _build/%.o, $(units))
 deps = $(patsubst %, _build/%.d, $(units))
 
 main.exe: $(objs)
-	@echo Linking
-	@g++ $^ -o $@
+	@ echo Linking [$(CPP)]
+	@ $(CPP) $^ -o $@
 
 _build/%.o: src/%.cpp
-	@echo Building $<
-	@g++ -Wall -Werror $< -c -o $@ -MMD
+	@ echo Building [$(CPP)] $<
+	@ $(CPP) -Wall -Werror $< -c -o $@ -MMD
 
 _build: ; @mkdir -p $@
 
