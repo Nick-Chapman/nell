@@ -15,6 +15,7 @@
 int main() {
   printf("**main\n");
   auto exp = make_example();
+  printf("exp: %s\n", exp->pp().c_str());
   int res = exp->eval();
-  printf("**res: %d\n", res);
+  printf("evalualtion result: %d\n", res);
 }
