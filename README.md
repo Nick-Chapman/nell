@@ -31,3 +31,8 @@ cmake -S llvm -B build -G Ninja -DLLVM_TARGETS_TO_BUILD=host -DCMAKE_BUILD_TYPE=
 cd build
 ninja
 ```
+
+### Early play
+
+- [play1](play1) Compile C code using clang to LLVM.
+- [play2](play2) Generate LLVM by hand using Haskell.
