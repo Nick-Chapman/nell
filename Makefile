@@ -9,7 +9,7 @@ run: _build main.exe
 #CPP = g++
 CPP = clang++
 
-MAX_ERROR = -Wall -Werror -Wno-mismatched-tags
+MAX_ERROR = -Wall -Werror -Wno-mismatched-tags # -Wno-unused-variable
 
 LLVM_FLAGS = \
 -DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING=1 \

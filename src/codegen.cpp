@@ -16,15 +16,17 @@
 
 using namespace llvm;
 
+//typedef IRBuilder<> BuilderT; //TODO: helpful?
+
 static std::unique_ptr<LLVMContext> TheContext;
-//static std::unique_ptr<IRBuilder<>> Builder(TheContext); // TODO!
+static std::unique_ptr<IRBuilder<>> Builder; //(TheContext); // TODO!
 static std::unique_ptr<Module> TheModule;
 //static std::map<std::string, Value *> NamedValues;
 
 void InitializeModule() {
   TheContext = std::make_unique<LLVMContext>();
   TheModule = std::make_unique<Module>("my-module", *TheContext);
-  //Builder = std::make_unique<IRBuilder<>>(*TheContext);
+  Builder = std::make_unique<IRBuilder<>>(*TheContext);
 }
 
 void DumpCode() {
@@ -41,8 +43,7 @@ Value* Num::codegen() {
 Value* Sub::codegen() {
   //crash
   auto L = left->codegen();
-  //auto R = right->codegen();
-  //auto xx = Builder->CreateFSub(L, R, "subtmp");
-  auto res = L;
+  auto R = right->codegen();
+  auto res = Builder->CreateFSub(L, R, "subtmp");
   return res;
 }

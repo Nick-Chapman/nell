@@ -13,7 +13,7 @@ int main() {
   auto exp = make_example();
   printf("exp: %s\n", exp->pp().c_str());
   int res = exp->eval();
-  printf("evalualtion result: %d\n", res);
+  printf("evaluation result: %d\n", res);
   InitializeModule();
   llvm::Value* code = exp->codegen();
   printf("code gen complete: %p\n", code);
