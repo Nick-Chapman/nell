@@ -20,6 +20,8 @@ public:
   virtual llvm::Value* codegen() = 0;
 };
 
+// TODO: Vars: in first case will be inputs to TheFunction
+
 class Num : public Exp {
 private:
   int num;
@@ -42,5 +44,7 @@ public:
   std::string pp() override;
   llvm::Value* codegen() override;
 };
+
+// TODO: Ast for top level function defs
 
 #endif // AST_H

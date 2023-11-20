@@ -18,6 +18,7 @@ using namespace llvm;
 
 //typedef IRBuilder<> BuilderT; //TODO: helpful?
 
+// TODO: move to own context type instead of top level statics
 static std::unique_ptr<LLVMContext> TheContext;
 static std::unique_ptr<IRBuilder<>> Builder;
 static std::unique_ptr<Module> TheModule;
@@ -28,7 +29,8 @@ void InitializeModule() {
   TheModule = std::make_unique<Module>("TheModule", *TheContext);
   Builder = std::make_unique<IRBuilder<>>(*TheContext);
 
-  Type* D = Type::getDoubleTy(*TheContext);
+  // TODO: drive function codegen from AST
+  Type* D = Type::getDoubleTy(*TheContext); // TODO: int
   std::vector<Type*> Nil;
   FunctionType *FT = FunctionType::get(D,Nil,false);
   GlobalValue::LinkageTypes L = Function::ExternalLinkage;

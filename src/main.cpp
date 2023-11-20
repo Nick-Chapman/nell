@@ -19,6 +19,8 @@ int main() {
   InitializeModule();
   llvm::Value* v = exp->codegen();
   MakeTopLevel(v);
+  // TODO: control constant folding?
   DumpCode();
-
+  // TODO write llvm code to file, for external compilation & execution
+  // TODO JIT compile and execute
 }
