@@ -19,20 +19,30 @@ using namespace llvm;
 //typedef IRBuilder<> BuilderT; //TODO: helpful?
 
 static std::unique_ptr<LLVMContext> TheContext;
-static std::unique_ptr<IRBuilder<>> Builder; //(TheContext); // TODO!
+static std::unique_ptr<IRBuilder<>> Builder;
 static std::unique_ptr<Module> TheModule;
 //static std::map<std::string, Value *> NamedValues;
 
 void InitializeModule() {
   TheContext = std::make_unique<LLVMContext>();
-  TheModule = std::make_unique<Module>("my-module", *TheContext);
+  TheModule = std::make_unique<Module>("TheModule", *TheContext);
   Builder = std::make_unique<IRBuilder<>>(*TheContext);
+
+  Type* D = Type::getDoubleTy(*TheContext);
+  std::vector<Type*> Nil;
+  FunctionType *FT = FunctionType::get(D,Nil,false);
+  GlobalValue::LinkageTypes L = Function::ExternalLinkage;
+  Function* F = Function::Create(FT,L,"TheFunction",TheModule.get());
+  BasicBlock *BB = BasicBlock::Create(*TheContext, "Entry", F);
+  Builder->SetInsertPoint(BB);
+}
+
+void MakeTopLevel(llvm::Value* v) {
+  Builder->CreateRet(v);
 }
 
 void DumpCode() {
-  printf("**DumpCode...\n");
   TheModule->print(errs(), nullptr);
-  printf("**DumpCode...DONE\n");
 }
 
 Value* Num::codegen() {
@@ -41,7 +51,6 @@ Value* Num::codegen() {
 }
 
 Value* Sub::codegen() {
-  //crash
   auto L = left->codegen();
   auto R = right->codegen();
   auto res = Builder->CreateFSub(L, R, "subtmp");

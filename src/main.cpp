@@ -7,15 +7,18 @@
 
 void InitializeModule(); // codegen.cpp
 void DumpCode(); // codegen.cpp
+void MakeTopLevel(llvm::Value*); // codegen.cpp
 
 int main() {
   printf("**main\n");
   auto exp = make_example();
-  printf("exp: %s\n", exp->pp().c_str());
-  int res = exp->eval();
-  printf("evaluation result: %d\n", res);
+  //printf("exp: %s\n", exp->pp().c_str());
+  //int res = exp->eval();
+  //printf("evaluation result: %d\n", res);
+
   InitializeModule();
-  llvm::Value* code = exp->codegen();
-  printf("code gen complete: %p\n", code);
+  llvm::Value* v = exp->codegen();
+  MakeTopLevel(v);
   DumpCode();
+
 }
