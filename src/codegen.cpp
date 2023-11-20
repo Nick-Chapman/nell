@@ -66,6 +66,13 @@ Value* Num::codegen() {
   return ConstantInt::get(*TheContext, APInt(16,num));
 }
 
+Value* Mul::codegen() {
+  auto L = left->codegen();
+  auto R = right->codegen();
+  auto res = Builder->CreateMul(L, R, "multmp");
+  return res;
+}
+
 Value* Sub::codegen() {
   auto L = left->codegen();
   auto R = right->codegen();

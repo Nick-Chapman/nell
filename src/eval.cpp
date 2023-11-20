@@ -18,6 +18,12 @@ int Num::eval() {
   return num;
 }
 
+int Mul::eval() {
+  auto v1 = left->eval();
+  auto v2 = right->eval();
+  return v1*v2;
+}
+
 int Sub::eval() {
   auto v1 = left->eval();
   auto v2 = right->eval();

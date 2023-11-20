@@ -42,6 +42,19 @@ public:
   llvm::Value* codegen() override;
 };
 
+class Mul : public Exp {
+private:
+  up<Exp> left;
+  up<Exp> right;
+public:
+  Mul (up<Exp> left, up<Exp> right)
+    : left(std::move(left)), right(std::move(right))
+  {}
+  int eval() override;
+  std::string pp() override;
+  llvm::Value* codegen() override;
+};
+
 class Sub : public Exp {
 private:
   up<Exp> left;
