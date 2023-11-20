@@ -2,6 +2,10 @@
 #include "ast.h"
 #include "misc.h"
 
+std::string Var::pp() {
+  return name;
+}
+
 std::string Num::pp() {
   return std::to_string(num);
 }

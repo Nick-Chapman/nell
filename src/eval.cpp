@@ -1,5 +1,18 @@
 
 #include "ast.h"
+#include "misc.h"
+
+int Var::eval() {
+  //TODO: Need environment for bindings from var->value
+  // Inthe meantime, hardcode(hack) vars I need.
+  if (name == "xx1") {
+    return 10045;
+  }
+  if (name == "xx2") {
+    return 105;
+  }
+  crash
+}
 
 int Num::eval() {
   return num;

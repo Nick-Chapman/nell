@@ -22,6 +22,16 @@ public:
 
 // TODO: Vars: in first case will be inputs to TheFunction
 
+class Var : public Exp {
+private:
+  std::string name;
+public:
+  Var (std::string name) : name(name) {}
+  int eval() override;
+  std::string pp() override;
+  llvm::Value* codegen() override;
+};
+
 class Num : public Exp {
 private:
   int num;
