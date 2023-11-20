@@ -46,13 +46,12 @@ void DumpCode() {
 }
 
 Value* Num::codegen() {
-  float f = num;
-  return ConstantFP::get(*TheContext, APFloat(f)); // TODO: int!
+  return ConstantInt::get(*TheContext, APInt(32,num));
 }
 
 Value* Sub::codegen() {
   auto L = left->codegen();
   auto R = right->codegen();
-  auto res = Builder->CreateFSub(L, R, "subtmp");
+  auto res = Builder->CreateSub(L, R, "subtmp");
   return res;
 }
