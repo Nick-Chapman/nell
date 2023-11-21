@@ -55,21 +55,21 @@ void DumpCode() {
 
 
 Value* Var::codegen() {
-  Value* res = NamedValues[name];
+  Value* res = NamedValues[VarName];
   if (!res) {
-    printf("No such variable: %s\n",name.c_str());
+    printf("No such variable: %s\n",VarName.c_str());
     crash
   }
   return res;
 }
 
 Value* Num::codegen() {
-  return ConstantInt::get(*TheContext, APInt(16,num));
+  return ConstantInt::get(*TheContext, APInt(16,NumValue));
 }
 
 Value* Mul::codegen() {
-  auto L = left->codegen();
-  auto R = right->codegen();
+  auto L = MulLeft->codegen();
+  auto R = MulRight->codegen();
   auto res = Builder->CreateMul(L, R, "multmp");
   return res;
 }
@@ -79,8 +79,8 @@ Value* Call::codegen() {
 }
 
 Value* Sub::codegen() {
-  auto L = left->codegen();
-  auto R = right->codegen();
+  auto L = SubLeft->codegen();
+  auto R = SubRight->codegen();
   auto res = Builder->CreateSub(L, R, "subtmp");
   return res;
 }

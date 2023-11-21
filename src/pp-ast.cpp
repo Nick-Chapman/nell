@@ -4,19 +4,19 @@
 #include <vector>
 
 std::string Var::pp() {
-  return name;
+  return VarName;
 }
 
 std::string Num::pp() {
-  return std::to_string(num);
+  return std::to_string(NumValue);
 }
 
 std::string Mul::pp() {
-  return "(" + left->pp() + " * " + right->pp() + ")";
+  return "(" + MulLeft->pp() + " * " + MulRight->pp() + ")";
 }
 
 std::string Sub::pp() {
-  return "(" + left->pp() + " - " + right->pp() + ")";
+  return "(" + SubLeft->pp() + " - " + SubRight->pp() + ")";
 }
 
 std::string ppExps(std::vector<up<Exp>>& xs) {
@@ -33,7 +33,7 @@ std::string ppExps(std::vector<up<Exp>>& xs) {
 }
 
 std::string Call::pp() {
-  return func + "(" + ppExps(args) + ")";
+  return CallFunc + "(" + ppExps(CallArgs) + ")";
 }
 
 std::string ppNames(std::vector<Name> xs) {
@@ -51,7 +51,9 @@ std::string ppNames(std::vector<Name> xs) {
 }
 
 std::string Def::pp() {
-  return "def " + name + "(" + ppNames(formals) + "):\n  " + body->pp() + ";";
+  return
+    "def " + DefName + "(" + ppNames(DefFormals) + "):\n  " +
+    DefBody->pp() + ";";
 }
 
 std::string ppDefs(std::vector<up<Def>>& xs) {
@@ -68,5 +70,5 @@ std::string ppDefs(std::vector<up<Def>>& xs) {
 }
 
 std::string Prog::pp() {
-  return ppDefs(theDefs) + "\n\nmain: " + main->pp();
+  return ppDefs(ProgDefs) + "\n\nmain: " + ProgMain->pp();
 }

@@ -9,9 +9,9 @@ struct Env {
 };
 
 int Var::eval(Env& env) {
-  auto res = env.argBinds[name];
+  auto res = env.argBinds[VarName];
   if (!res) {
-    printf("Var: no binding for: %s\n",name.c_str());
+    printf("Var: no binding for: %s\n",VarName.c_str());
     crash
   }
   //printf("lookup: %s=%d\n",name.c_str(),*res);
@@ -19,52 +19,52 @@ int Var::eval(Env& env) {
 }
 
 int Num::eval(Env& env) {
-  return num;
+  return NumValue;
 }
 
 int Mul::eval(Env& env) {
-  int L = left->eval(env);
-  int R = right->eval(env);
+  int L = MulLeft->eval(env);
+  int R = MulRight->eval(env);
   return L * R;
 }
 
 int Sub::eval(Env& env) {
-  int L = left->eval(env);
-  int R = right->eval(env);
+  int L = SubLeft->eval(env);
+  int R = SubRight->eval(env);
   return L - R;
 }
 
 int Call::eval(Env& env) {
-  Def* D = env.defBinds[func];
+  Def* D = env.defBinds[CallFunc];
   if (!D) {
-    printf("Call: no such function: %s\n",func.c_str());
+    printf("Call: no such function: %s\n",CallFunc.c_str());
     crash
   }
   std::vector<int> AS;
-  for (auto &arg : args) {
+  for (auto &arg : CallArgs) {
     AS.push_back(arg->eval(env));
   }
   return D->apply(env,AS);
 }
 
 int Def::apply(Env& env0, std::vector<int> actuals) {
-  if (formals.size() != actuals.size()) {
-    printf("#formals=%zu, #actuals=%zu\n", formals.size(), actuals.size());
+  if (DefFormals.size() != actuals.size()) {
+    printf("#formals=%zu, #actuals=%zu\n", DefFormals.size(), actuals.size());
     crash
   }
   Env env = { env0.defBinds }; // zero the arg binds
-  for (unsigned i=0; i < formals.size(); i++) {
+  for (unsigned i=0; i < DefFormals.size(); i++) {
     //printf("bind: %s=%d\n",formals[i].c_str(),actuals[i]);
-    env.argBinds[formals[i]] = &actuals[i];
+    env.argBinds[DefFormals[i]] = &actuals[i];
   }
-  return body->eval(env);
+  return DefBody->eval(env);
 }
 
 int Prog::eval() {
   Env env;
-  for (auto &def : theDefs) {
-    env.defBinds[def->name] = &(*def);
+  for (auto &def : ProgDefs) {
+    env.defBinds[def->DefName] = &(*def);
   }
-  auto res = main->eval(env);
+  auto res = ProgMain->eval(env);
   return res;
 }

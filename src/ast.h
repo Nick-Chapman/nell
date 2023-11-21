@@ -16,8 +16,6 @@ typedef std::string Name;
 
 class Env;
 
-// TODO: use upper case names for members
-
 class Exp {
 public:
   virtual ~Exp() = default;
@@ -28,9 +26,9 @@ public:
 
 class Var : public Exp {
 private:
-  Name name;
+  Name VarName;
 public:
-  Var (Name name) : name(name) {}
+  Var (::Name VarName) : VarName(VarName) {}
   int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
@@ -38,9 +36,9 @@ public:
 
 class Num : public Exp {
 private:
-  int num;
+  int NumValue;
 public:
-  Num (int num) : num(num) {}
+  Num (int NumValue) : NumValue(NumValue) {}
   int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
@@ -48,11 +46,11 @@ public:
 
 class Mul : public Exp {
 private:
-  up<Exp> left;
-  up<Exp> right;
+  up<Exp> MulLeft;
+  up<Exp> MulRight;
 public:
-  Mul (up<Exp> left, up<Exp> right)
-    : left(mv(left)), right(mv(right))
+  Mul (up<Exp> MulLeft, up<Exp> MulRight)
+    : MulLeft(mv(MulLeft)), MulRight(mv(MulRight))
   {}
   int eval(Env&) override;
   std::string pp() override;
@@ -61,11 +59,11 @@ public:
 
 class Sub : public Exp {
 private:
-  up<Exp> left;
-  up<Exp> right;
+  up<Exp> SubLeft;
+  up<Exp> SubRight;
 public:
-  Sub (up<Exp> left, up<Exp> right)
-    : left(mv(left)), right(mv(right))
+  Sub (up<Exp> SubLeft, up<Exp> SubRight)
+    : SubLeft(mv(SubLeft)), SubRight(mv(SubRight))
   {}
   int eval(Env&) override;
   std::string pp() override;
@@ -73,10 +71,11 @@ public:
 };
 
 class Call : public Exp {
-  Name func;
-  std::vector<up<Exp>> args;
+  Name CallFunc;
+  std::vector<up<Exp>> CallArgs;
 public:
-  Call(Name func, std::vector<up<Exp>> args) : func(func), args(mv(args)) {}
+  Call(Name CallFunc, std::vector<up<Exp>> CallArgs)
+    : CallFunc(CallFunc), CallArgs(mv(CallArgs)) {}
   int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
@@ -84,23 +83,23 @@ public:
 
 class Def {
 public:
-  Name name;
+  Name DefName;
 private:
-  std::vector<Name> formals;
-  up<Exp> body;
+  std::vector<Name> DefFormals;
+  up<Exp> DefBody;
 public:
-  Def(Name name, std::vector<Name> formals, up<Exp> body)
-    : name(name), formals(formals), body(mv(body)) {}
+  Def(Name DefName, std::vector<Name> DefFormals, up<Exp> DefBody)
+    : DefName(DefName), DefFormals(DefFormals), DefBody(mv(DefBody)) {}
   std::string pp();
   int apply(Env&,std::vector<int>);
 };
 
 class Prog {
-  std::vector<up<Def>> theDefs;
-  up<Exp> main;
+  std::vector<up<Def>> ProgDefs;
+  up<Exp> ProgMain;
 public:
-  Prog(std::vector<up<Def>> theDefs, up<Exp> main)
-    : theDefs(mv(theDefs)), main(mv(main)) {}
+  Prog(std::vector<up<Def>> ProgDefs, up<Exp> ProgMain)
+    : ProgDefs(mv(ProgDefs)), ProgMain(mv(ProgMain)) {}
   std::string pp();
   int eval();
 };
