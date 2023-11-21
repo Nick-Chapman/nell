@@ -4,10 +4,7 @@
 #include <memory>
 #include "ast.h"
 #include "example.h"
-
-void InitializeModule(); // codegen.cpp
-void DumpCode(); // codegen.cpp
-void MakeTopLevel(llvm::Value*); // codegen.cpp
+#include "codegen.h"
 
 int main() {
   printf("**main\n");
@@ -16,13 +13,11 @@ int main() {
   printf("\n%s\n\n", prog->pp().c_str());
 
   int res = prog->eval();
-  printf("evaluation result: %d\n", res);
+  printf("evaluation result: %d\n\n", res);
 
-  //InitializeModule();
-  //llvm::Value* v = exp->codegen();
-  //MakeTopLevel(v);
+  codegen(*prog);
   // TODO: control constant folding?
-  //DumpCode();
   // TODO write llvm code to file, for external compilation & execution
   // TODO JIT compile and execute
+
 }

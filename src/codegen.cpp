@@ -10,52 +10,14 @@
 
 using namespace llvm;
 
-// TODO: move to own context type instead of top level statics
+// TODO: use own context instead of globals
 static up<LLVMContext> TheContext;
 static up<IRBuilder<>> Builder;
+static std::map<std::string, Value *> NamedValues; // meh
 static up<Module> TheModule;
-static std::map<std::string, Value *> NamedValues;
-
-void InitializeModule() {
-  TheContext = mk<LLVMContext>();
-  TheModule = mk<Module>("TheModule", *TheContext);
-  Builder = mk<IRBuilder<>>(*TheContext);
-
-  // TODO: drive function codegen from AST
-  Type* D = Type::getInt16Ty(*TheContext);
-  std::vector<Type*> ArgTypes;
-
-  // setup 2 function inputs
-  ArgTypes.push_back(D);
-  ArgTypes.push_back(D);
-
-  FunctionType *FT = FunctionType::get(D,ArgTypes,false);
-  GlobalValue::LinkageTypes L = Function::ExternalLinkage;
-  Function* F = Function::Create(FT,L,"TheFunction",TheModule.get());
-  BasicBlock *BB = BasicBlock::Create(*TheContext, "Entry", F);
-  Builder->SetInsertPoint(BB);
-
-  int i = 0;
-  for (auto &Arg : F->args()) {
-    i++;
-    std::string name = "xx" + std::to_string(i);
-    //printf("making input: %d, %s\n",i,name.c_str());
-    NamedValues[name] = &Arg;
-    Arg.setName(name);
-  }
-}
-
-void MakeTopLevel(llvm::Value* v) {
-  Builder->CreateRet(v);
-}
-
-void DumpCode() {
-  TheModule->print(errs(), nullptr);
-}
-
 
 Value* Var::codegen() {
-  Value* res = NamedValues[VarName];
+  Value* res = NamedValues[VarName]; // meh
   if (!res) {
     printf("No such variable: %s\n",VarName.c_str());
     crash
@@ -95,4 +57,52 @@ Value* Ite::codegen() {
 
 Value* Call::codegen() {
   crash
+}
+
+void Def::codegen() {
+
+  Type* T = Type::getInt16Ty(*TheContext); // everything is an int!
+  Type* retType = T;
+  std::vector<Type*> ArgTypes;
+  for (unsigned i=0; i < DefFormals.size(); i++) {
+    ArgTypes.push_back(T);
+  }
+
+  FunctionType *FT = FunctionType::get(retType,ArgTypes,false);
+  GlobalValue::LinkageTypes L = Function::ExternalLinkage;
+  Function* F = Function::Create(FT,L,DefName,TheModule.get());
+  BasicBlock *BB = BasicBlock::Create(*TheContext, "Entry", F);
+  Builder->SetInsertPoint(BB);
+
+  int i = 0;
+  for (auto &Arg : F->args()) {
+    Name name = DefFormals[i];
+    i++;
+    NamedValues[name] = &Arg; //meh
+    Arg.setName(name);
+  }
+
+  llvm::Value* v = DefBody->codegen();
+  Builder->CreateRet(v);
+}
+
+static void Init() {
+  TheContext = mk<LLVMContext>();
+  TheModule = mk<Module>("TheModule", *TheContext);
+  Builder = mk<IRBuilder<>>(*TheContext);
+}
+
+// entry point...
+void codegen(Prog& prog) {
+  Init(); // TODO: Use context param
+  for (auto &def : prog.ProgDefs) {
+    //printf("gen for: %s\n",def->DefName.c_str());
+    def->codegen();
+  }
+  // TODO: ProgMain
+  if (!TheModule) {
+    printf("DumpCode: no module!\n");
+    crash
+  }
+  TheModule->print(errs(), nullptr);
 }

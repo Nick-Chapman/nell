@@ -24,8 +24,6 @@ public:
   virtual llvm::Value* codegen() = 0;
 };
 
-// TODO: Add, If-then-else
-
 class Var : public Exp {
 private:
   Name VarName;
@@ -136,12 +134,13 @@ public:
     : DefName(DefName), DefFormals(DefFormals), DefBody(mv(DefBody)) {}
   std::string pp();
   int apply(Env&,std::vector<int>);
+  void codegen();
 };
 
 class Prog {
+public:
   std::vector<up<Def>> ProgDefs;
   up<Exp> ProgMain;
-public:
   Prog(std::vector<up<Def>> ProgDefs, up<Exp> ProgMain)
     : ProgDefs(mv(ProgDefs)), ProgMain(mv(ProgMain)) {}
   std::string pp();
