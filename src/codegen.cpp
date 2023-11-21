@@ -152,7 +152,6 @@ void codegen(Prog& prog) {
   for (auto &def : prog.ProgDefs) {
     def->codegen(top);
   }
-  // TODO: ProgMain
 
   // dump...
   module.print(errs(), nullptr);

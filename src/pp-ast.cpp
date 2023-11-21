@@ -82,5 +82,5 @@ std::string ppDefs(std::vector<up<Def>>& xs) {
 }
 
 std::string Prog::pp() {
-  return ppDefs(ProgDefs) + "\n\nmain: " + ProgMain->pp();
+  return ppDefs(ProgDefs);
 }

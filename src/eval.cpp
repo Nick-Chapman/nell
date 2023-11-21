@@ -14,7 +14,6 @@ int Var::eval(Env& env) {
     printf("Var: no binding for: %s\n",VarName.c_str());
     crash
   }
-  //printf("lookup: %s=%d\n",name.c_str(),*res);
   return *res;
 }
 
@@ -74,7 +73,6 @@ int Def::apply(Env& env0, std::vector<int> actuals) {
   }
   Env env = { env0.defBinds }; // zero the arg binds
   for (unsigned i=0; i < DefFormals.size(); i++) {
-    //printf("bind: %s=%d\n",formals[i].c_str(),actuals[i]);
     env.argBinds[DefFormals[i]] = &actuals[i];
   }
   return DefBody->eval(env);
@@ -85,6 +83,11 @@ int Prog::eval() {
   for (auto &def : ProgDefs) {
     env.defBinds[def->DefName] = &(*def);
   }
-  auto res = ProgMain->eval(env);
-  return res;
+  Def* Main = env.defBinds["main"];
+  if (!Main) {
+    printf("Call: no main function\n");
+    crash
+  }
+  std::vector<int> AS;
+  return Main->apply(env,AS);
 }

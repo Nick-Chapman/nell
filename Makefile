@@ -1,10 +1,14 @@
 
 top: run
 
-build: _build main.exe
+run: _build/out.ll
+	lli $^ ; echo $$?
 
-run: _build main.exe
-	./main.exe
+see: _build/out.ll
+	cat $^
+
+_build/out.ll: _build _build/main.exe
+	_build/main.exe 2> $@ || rm -f $@
 
 #CPP = g++
 CPP = clang++
@@ -26,7 +30,7 @@ units = $(patsubst src/%.cpp, %, $(wildcard src/*.cpp))
 objs = $(patsubst %, _build/%.o, $(units))
 deps = $(patsubst %, _build/%.d, $(units))
 
-main.exe: $(objs)
+_build/main.exe: $(objs)
 	@ echo Linking [$(CPP)]
 	@ $(CPP) $^ $(LLVM_LIBS) -o $@
 

@@ -58,16 +58,22 @@ up<Def> make_fib() {
   return mk<Def>("fib",formals,mv(body));
 }
 
+up<Def> make_main() {
+  std::vector<Name> formals;
+  std::vector<up<Exp>> args;
+  args.push_back(mk<Num>(3));
+  auto body = mk<Call>("quad",mv(args));
+  return mk<Def>("main",formals,mv(body));
+}
+
 up<Prog> make_prog() {
   std::vector<up<Def>> defs;
   //defs.push_back(make_absdiff());// works
   defs.push_back(make_square());
   defs.push_back(make_quad());
+  defs.push_back(make_main());
   // TODO: compile recursive and foward calls
   //defs.push_back(make_fact());
   //defs.push_back(make_fib());
-  std::vector<up<Exp>> args;
-  args.push_back(mk<Num>(10));
-  auto main = mk<Call>("square",mv(args));
-  return mk<Prog>(mv(defs),mv(main));
+  return mk<Prog>(mv(defs));
 }

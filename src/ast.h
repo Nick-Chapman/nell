@@ -143,9 +143,7 @@ public:
 class Prog {
 public:
   std::vector<up<Def>> ProgDefs;
-  up<Exp> ProgMain;
-  Prog(std::vector<up<Def>> ProgDefs, up<Exp> ProgMain)
-    : ProgDefs(mv(ProgDefs)), ProgMain(mv(ProgMain)) {}
+  Prog(std::vector<up<Def>> ProgDefs) : ProgDefs(mv(ProgDefs)) {}
   std::string pp();
   int eval();
 };
