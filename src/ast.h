@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 #include "misc.h"
 
 namespace llvm {
@@ -71,9 +72,9 @@ public:
 
 class Call1 : public Exp {
   Name func;
-  up<Exp> arg; // TODO: many args
+  std::vector<up<Exp>> args;
 public:
-  Call1(Name func, up<Exp> arg) : func(func), arg(mv(arg)) {}
+  Call1(Name func, std::vector<up<Exp>> args) : func(func), args(mv(args)) {}
   int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
@@ -83,13 +84,13 @@ class Def {
 public:
   Name name;
 private:
-  Name formal; // TODO: many formals
+  std::vector<Name> formals;
   up<Exp> body;
 public:
-  Def(Name name, Name formal, up<Exp> body)
-    : name(name), formal(formal), body(mv(body)) {}
+  Def(Name name, std::vector<Name> formals, up<Exp> body)
+    : name(name), formals(formals), body(mv(body)) {}
   std::string pp();
-  int apply(Env&,int);
+  int apply(Env&,std::vector<int>);
 };
 
 class Prog {
