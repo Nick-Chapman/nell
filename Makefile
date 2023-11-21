@@ -4,8 +4,8 @@ top: run
 run: _build/out.ll
 	lli $^ ; echo $$?
 
-see: _build/out.ll
-	cat $^
+see: _build _build/main.exe
+	_build/main.exe
 
 _build/out.ll: _build _build/main.exe
 	_build/main.exe 2> $@ || rm -f $@

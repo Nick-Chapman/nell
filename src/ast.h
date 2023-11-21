@@ -137,6 +137,7 @@ public:
     : DefName(DefName), DefFormals(DefFormals), DefBody(mv(DefBody)) {}
   std::string pp();
   int apply(Env&,std::vector<int>);
+  void declare(TopCon&);
   void codegen(TopCon&);
 };
 

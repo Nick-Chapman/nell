@@ -106,26 +106,24 @@ Value* Call::codegen(DefCon& con) {
   return builder.CreateCall(callee, actuals, "call-tmp");
 }
 
-void Def::codegen(TopCon& top) {
-
-  auto& context = top.context;
-
-  Type* T = Type::getInt16Ty(context); // everything is an int!
+void Def::declare(TopCon& top) {
+  Type* T = Type::getInt16Ty(top.context); // everything is an int!
   Type* retType = T;
   std::vector<Type*> ArgTypes;
   for (unsigned i=0; i < DefFormals.size(); i++) {
     ArgTypes.push_back(T);
   }
-
   FunctionType *FT = FunctionType::get(retType,ArgTypes,false);
   GlobalValue::LinkageTypes L = Function::ExternalLinkage;
-  Function* function = Function::Create(FT,L,DefName,top.module);
-  BasicBlock *BB = BasicBlock::Create(context, "Entry", function);
-  top.builder.SetInsertPoint(BB);
+  Function::Create(FT,L,DefName,top.module);
+}
 
+void Def::codegen(TopCon& top) {
+  Function* function = top.module.getFunction(DefName);
+  BasicBlock *BB = BasicBlock::Create(top.context, "Entry", function);
+  top.builder.SetInsertPoint(BB);
   std::map<std::string, Value*> args;
   DefCon con { top, function, args };
-
   int i = 0;
   for (auto &Arg : function->args()) {
     Name name = DefFormals[i];
@@ -133,26 +131,23 @@ void Def::codegen(TopCon& top) {
     con.args[name] = &Arg;
     Arg.setName(name);
   }
-
   llvm::Value* v = DefBody->codegen(con);
   con.top.builder.CreateRet(v);
-
   verifyFunction(*function);
 }
 
 // entry point...
 void codegen(Prog& prog) {
-
   LLVMContext context;
   IRBuilder<> builder(context);
   Module module("TheModule", context);
-
   TopCon top = { context, builder, module };
-
+  for (auto &def : prog.ProgDefs) {
+    def->declare(top);
+  }
   for (auto &def : prog.ProgDefs) {
     def->codegen(top);
   }
-
   // dump...
   module.print(errs(), nullptr);
 }
