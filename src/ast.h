@@ -85,6 +85,35 @@ public:
   llvm::Value* codegen() override;
 };
 
+class LessThan : public Exp {
+private:
+  up<Exp> LessThanLeft;
+  up<Exp> LessThanRight;
+public:
+  LessThan (up<Exp> LessThanLeft, up<Exp> LessThanRight)
+    : LessThanLeft(mv(LessThanLeft)), LessThanRight(mv(LessThanRight))
+  {}
+  int eval(Env&) override;
+  std::string pp() override;
+  llvm::Value* codegen() override;
+};
+
+class Ite : public Exp {
+private:
+  up<Exp> IteCond;
+  up<Exp> IteThen;
+  up<Exp> IteElse;
+public:
+  Ite (up<Exp> IteCond, up<Exp> IteThen, up<Exp> IteElse)
+    : IteCond(mv(IteCond))
+    , IteThen(mv(IteThen))
+    , IteElse(mv(IteElse))
+  {}
+  int eval(Env&) override;
+  std::string pp() override;
+  llvm::Value* codegen() override;
+};
+
 class Call : public Exp {
   Name CallFunc;
   std::vector<up<Exp>> CallArgs;

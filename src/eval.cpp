@@ -40,6 +40,20 @@ int Sub::eval(Env& env) {
   return L - R;
 }
 
+int LessThan::eval(Env& env) {
+  int L = LessThanLeft->eval(env);
+  int R = LessThanRight->eval(env);
+  return L < R;
+}
+
+int Ite::eval(Env& env) {
+  if (IteCond->eval(env)) {
+    return IteThen->eval(env);
+  } else {
+    return IteElse->eval(env);
+  }
+}
+
 int Call::eval(Env& env) {
   Def* D = env.defBinds[CallFunc];
   if (!D) {

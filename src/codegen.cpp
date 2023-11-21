@@ -85,6 +85,14 @@ Value* Sub::codegen() {
   return res;
 }
 
+Value* LessThan::codegen() {
+  crash
+}
+
+Value* Ite::codegen() {
+  crash
+}
+
 Value* Call::codegen() {
   crash
 }

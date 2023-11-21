@@ -23,6 +23,14 @@ std::string Sub::pp() {
   return "(" + SubLeft->pp() + " - " + SubRight->pp() + ")";
 }
 
+std::string LessThan::pp() {
+  return "(" + LessThanLeft->pp() + " < " + LessThanRight->pp() + ")";
+}
+
+std::string Ite::pp() {
+  return "(" + IteCond->pp() + " ? " + IteThen->pp() + " : " + IteElse->pp() + ")";
+}
+
 std::string ppExps(std::vector<up<Exp>>& xs) {
   std::string acc = "";
   bool first = true;

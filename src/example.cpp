@@ -3,6 +3,16 @@
 
 // TODO: recursion: fib, fact
 
+up<Def> make_absdiff() {
+  std::vector<Name> formals;
+  formals.push_back("x");
+  formals.push_back("y");
+  auto body = mk<Ite>(mk<LessThan>(mk<Var>("x"),mk<Var>("y")),
+                      mk<Sub>(mk<Var>("y"),mk<Var>("x")),
+                      mk<Sub>(mk<Var>("x"),mk<Var>("y")));
+  return mk<Def>("absdiff",formals,mv(body));
+}
+
 up<Def> make_square() {
   std::vector<Name> formals;
   formals.push_back("x");
@@ -28,11 +38,12 @@ up<Def> make_f1() {
 
 up<Prog> make_prog() {
   std::vector<up<Def>> defs;
+  defs.push_back(make_absdiff());
   defs.push_back(make_square());
   defs.push_back(make_f1());
   std::vector<up<Exp>> args;
-  args.push_back(mk<Num>(2));
-  args.push_back(mk<Num>(3));
-  auto main = mk<Call>("f1",mv(args));
+  args.push_back(mk<Num>(22));
+  args.push_back(mk<Num>(33));
+  auto main = mk<Call>("absdiff",mv(args));
   return mk<Prog>(mv(defs),mv(main));
 }
