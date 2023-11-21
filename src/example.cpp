@@ -13,8 +13,13 @@ up<Def> make_f1() {
   std::vector<Name> formals;
   formals.push_back("x1");
   formals.push_back("x2");
+
+  std::vector<up<Exp>> args;
+  args.push_back(mk<Var>("x2"));
+  auto e = mk<Call>("square",mv(args));
+
   auto body =
-    mk<Sub>(mk<Mul>(mk<Var>("x1"),mk<Var>("x2")),
+    mk<Sub>(mk<Mul>(mk<Var>("x1"),mv(e)),
             mk<Num>(1));
   return mk<Def>("f1",formals,mv(body));
 }
