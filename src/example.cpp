@@ -60,14 +60,14 @@ up<Def> make_fib() {
 
 up<Prog> make_prog() {
   std::vector<up<Def>> defs;
-  defs.push_back(make_absdiff());
+  //defs.push_back(make_absdiff());// works
   defs.push_back(make_square());
-  //defs.push_back(make_quad());
+  defs.push_back(make_quad());
+  // TODO: compile recursive and foward calls
   //defs.push_back(make_fact());
   //defs.push_back(make_fib());
   std::vector<up<Exp>> args;
   args.push_back(mk<Num>(10));
-  args.push_back(mk<Num>(27));
-  auto main = mk<Call>("absdiff",mv(args));
+  auto main = mk<Call>("square",mv(args));
   return mk<Prog>(mv(defs),mv(main));
 }

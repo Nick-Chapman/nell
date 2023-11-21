@@ -88,7 +88,22 @@ Value* Ite::codegen(DefCon& con) {
 }
 
 Value* Call::codegen(DefCon& con) {
-  crash // TODO
+  auto& builder = con.top.builder;
+  Function* callee = con.top.module.getFunction(CallFunc);
+  if (!callee) {
+    printf("No such function: %s\n",CallFunc.c_str());
+    crash
+  }
+  if (callee->arg_size() != CallArgs.size()) {
+    printf("call-to(%s) #formals=%zu, #actuals=%zu\n",
+           CallFunc.c_str(), callee->arg_size(), CallArgs.size());
+    crash
+  }
+  std::vector<Value*> actuals;
+  for (auto &arg : CallArgs) {
+    actuals.push_back(arg->codegen(con));
+  }
+  return builder.CreateCall(callee, actuals, "call-tmp");
 }
 
 void Def::codegen(TopCon& top) {
