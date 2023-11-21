@@ -24,6 +24,8 @@ public:
   virtual llvm::Value* codegen() = 0;
 };
 
+// TODO: Add, If-then-else
+
 class Var : public Exp {
 private:
   Name VarName;

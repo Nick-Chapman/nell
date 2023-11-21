@@ -1,6 +1,8 @@
 
 #include "example.h"
 
+// TODO: recursion: fib, fact
+
 up<Def> make_square() {
   std::vector<Name> formals;
   formals.push_back("x1");
