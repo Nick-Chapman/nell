@@ -19,14 +19,6 @@ up<Def> make_square() {
             mk<Mul>(mk<Var>("x"),mk<Var>("x")));
 }
 
-up<Def> make_square2() {
-  std::vector<Name> formals;
-  formals.push_back("y");
-  return
-    mk<Def>("square2",formals,
-            mk<Mul>(mk<Var>("y"),mk<Var>("y")));
-}
-
 up<Def> make_quad() {
   std::vector<Name> formals;
   formals.push_back("x");
@@ -68,14 +60,14 @@ up<Def> make_fib() {
 
 up<Prog> make_prog() {
   std::vector<up<Def>> defs;
-  //defs.push_back(make_absdiff());
+  defs.push_back(make_absdiff());
   defs.push_back(make_square());
-  defs.push_back(make_square2());
   //defs.push_back(make_quad());
   //defs.push_back(make_fact());
   //defs.push_back(make_fib());
   std::vector<up<Exp>> args;
   args.push_back(mk<Num>(10));
-  auto main = mk<Call>("square2",mv(args));
+  args.push_back(mk<Num>(27));
+  auto main = mk<Call>("absdiff",mv(args));
   return mk<Prog>(mv(defs),mv(main));
 }

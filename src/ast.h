@@ -14,14 +14,17 @@ namespace llvm {
 
 typedef std::string Name;
 
-class Env;
+class Env; // eval.cpp
+
+class TopCon; // codegen.cpp
+class DefCon; // codegen.cpp
 
 class Exp {
 public:
   virtual ~Exp() = default;
-  virtual int eval(Env&) = 0;
-  virtual std::string pp() = 0;
-  virtual llvm::Value* codegen() = 0;
+  virtual int eval(Env&) = 0; // eval.cpp
+  virtual std::string pp() = 0; // pp-ast.cpp
+  virtual llvm::Value* codegen(DefCon&) = 0; // codegen.cpp
 };
 
 class Var : public Exp {
@@ -31,7 +34,7 @@ public:
   Var (::Name VarName) : VarName(VarName) {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Num : public Exp {
@@ -41,7 +44,7 @@ public:
   Num (int NumValue) : NumValue(NumValue) {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Mul : public Exp {
@@ -54,7 +57,7 @@ public:
   {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Add : public Exp {
@@ -67,7 +70,7 @@ public:
   {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Sub : public Exp {
@@ -80,7 +83,7 @@ public:
   {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class LessThan : public Exp {
@@ -93,7 +96,7 @@ public:
   {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Ite : public Exp {
@@ -109,7 +112,7 @@ public:
   {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Call : public Exp {
@@ -120,7 +123,7 @@ public:
     : CallFunc(CallFunc), CallArgs(mv(CallArgs)) {}
   int eval(Env&) override;
   std::string pp() override;
-  llvm::Value* codegen() override;
+  llvm::Value* codegen(DefCon&) override;
 };
 
 class Def {
@@ -134,7 +137,7 @@ public:
     : DefName(DefName), DefFormals(DefFormals), DefBody(mv(DefBody)) {}
   std::string pp();
   int apply(Env&,std::vector<int>);
-  void codegen();
+  void codegen(TopCon&);
 };
 
 class Prog {

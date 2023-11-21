@@ -7,17 +7,24 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/Verifier.h"
 
 using namespace llvm;
 
-// TODO: use own context instead of globals
-static up<LLVMContext> TheContext;
-static up<IRBuilder<>> Builder;
-static std::map<std::string, Value *> NamedValues; // meh
-static up<Module> TheModule;
+struct TopCon {
+  LLVMContext& context;
+  IRBuilder<>& builder;
+  Module& module;
+};
 
-Value* Var::codegen() {
-  Value* res = NamedValues[VarName]; // meh
+struct DefCon {
+  TopCon& top;
+  Function* function;
+  std::map<std::string, Value *> args;
+};
+
+Value* Var::codegen(DefCon& con) {
+  Value* res = con.args[VarName];
   if (!res) {
     printf("No such variable: %s\n",VarName.c_str());
     crash
@@ -25,43 +32,70 @@ Value* Var::codegen() {
   return res;
 }
 
-Value* Num::codegen() {
-  return ConstantInt::get(*TheContext, APInt(16,NumValue));
+Value* Num::codegen(DefCon& con) {
+  return ConstantInt::get(con.top.context, APInt(16,NumValue));
 }
 
-Value* Mul::codegen() {
-  auto L = MulLeft->codegen();
-  auto R = MulRight->codegen();
-  auto res = Builder->CreateMul(L, R, "multmp");
-  return res;
+Value* Mul::codegen(DefCon& con) {
+  auto L = MulLeft->codegen(con);
+  auto R = MulRight->codegen(con);
+  return con.top.builder.CreateMul(L, R, "mul-tmp");
 }
 
-Value* Add::codegen() {
-  crash
+Value* Add::codegen(DefCon& con) {
+  auto L = AddLeft->codegen(con);
+  auto R = AddRight->codegen(con);
+  return con.top.builder.CreateAdd(L, R, "add-tmp");
 }
 
-Value* Sub::codegen() {
-  auto L = SubLeft->codegen();
-  auto R = SubRight->codegen();
-  auto res = Builder->CreateSub(L, R, "subtmp");
-  return res;
+Value* Sub::codegen(DefCon& con) {
+  auto L = SubLeft->codegen(con);
+  auto R = SubRight->codegen(con);
+  return con.top.builder.CreateSub(L, R, "sub-tmp");
 }
 
-Value* LessThan::codegen() {
-  crash
+Value* LessThan::codegen(DefCon& con) {
+  auto L = LessThanLeft->codegen(con);
+  auto R = LessThanRight->codegen(con);
+  return con.top.builder.CreateICmpULT(L, R, "lt-tmp");
 }
 
-Value* Ite::codegen() {
-  crash
+Value* Ite::codegen(DefCon& con) {
+  auto& context = con.top.context;
+  auto& builder = con.top.builder;
+
+  BasicBlock* ThenBB = BasicBlock::Create(context, "bthen", con.function);
+  BasicBlock* ElseBB = BasicBlock::Create(context, "belse", con.function);
+  BasicBlock* MergeBB = BasicBlock::Create(context, "bmerge", con.function);
+
+  auto Cond = IteCond->codegen(con);
+  builder.CreateCondBr(Cond,ThenBB,ElseBB);
+
+  builder.SetInsertPoint(ThenBB);
+  auto Then = IteThen->codegen(con);
+  builder.CreateBr(MergeBB);
+
+  builder.SetInsertPoint(ElseBB);
+  auto Else = IteElse->codegen(con);
+  builder.CreateBr(MergeBB);
+
+  builder.SetInsertPoint(MergeBB);
+  Type* Ty = Type::getInt16Ty(context);
+  PHINode* Phi = builder.CreatePHI(Ty, 2, "merged");
+  Phi->addIncoming(Then, ThenBB);
+  Phi->addIncoming(Else, ElseBB);
+  return Phi;
 }
 
-Value* Call::codegen() {
-  crash
+Value* Call::codegen(DefCon& con) {
+  crash // TODO
 }
 
-void Def::codegen() {
+void Def::codegen(TopCon& top) {
 
-  Type* T = Type::getInt16Ty(*TheContext); // everything is an int!
+  auto& context = top.context;
+
+  Type* T = Type::getInt16Ty(context); // everything is an int!
   Type* retType = T;
   std::vector<Type*> ArgTypes;
   for (unsigned i=0; i < DefFormals.size(); i++) {
@@ -70,39 +104,41 @@ void Def::codegen() {
 
   FunctionType *FT = FunctionType::get(retType,ArgTypes,false);
   GlobalValue::LinkageTypes L = Function::ExternalLinkage;
-  Function* F = Function::Create(FT,L,DefName,TheModule.get());
-  BasicBlock *BB = BasicBlock::Create(*TheContext, "Entry", F);
-  Builder->SetInsertPoint(BB);
+  Function* function = Function::Create(FT,L,DefName,top.module);
+  BasicBlock *BB = BasicBlock::Create(context, "Entry", function);
+  top.builder.SetInsertPoint(BB);
+
+  std::map<std::string, Value*> args;
+  DefCon con { top, function, args };
 
   int i = 0;
-  for (auto &Arg : F->args()) {
+  for (auto &Arg : function->args()) {
     Name name = DefFormals[i];
     i++;
-    NamedValues[name] = &Arg; //meh
+    con.args[name] = &Arg;
     Arg.setName(name);
   }
 
-  llvm::Value* v = DefBody->codegen();
-  Builder->CreateRet(v);
-}
+  llvm::Value* v = DefBody->codegen(con);
+  con.top.builder.CreateRet(v);
 
-static void Init() {
-  TheContext = mk<LLVMContext>();
-  TheModule = mk<Module>("TheModule", *TheContext);
-  Builder = mk<IRBuilder<>>(*TheContext);
+  verifyFunction(*function);
 }
 
 // entry point...
 void codegen(Prog& prog) {
-  Init(); // TODO: Use context param
+
+  LLVMContext context;
+  IRBuilder<> builder(context);
+  Module module("TheModule", context);
+
+  TopCon top = { context, builder, module };
+
   for (auto &def : prog.ProgDefs) {
-    //printf("gen for: %s\n",def->DefName.c_str());
-    def->codegen();
+    def->codegen(top);
   }
   // TODO: ProgMain
-  if (!TheModule) {
-    printf("DumpCode: no module!\n");
-    crash
-  }
-  TheModule->print(errs(), nullptr);
+
+  // dump...
+  module.print(errs(), nullptr);
 }
