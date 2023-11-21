@@ -11,16 +11,18 @@ void MakeTopLevel(llvm::Value*); // codegen.cpp
 
 int main() {
   printf("**main\n");
-  auto exp = make_example();
-  printf("exp: %s\n", exp->pp().c_str());
-  int res = exp->eval();
+
+  auto prog = make_prog();
+  printf("prog: %s\n", prog->pp().c_str());
+
+  int res = prog->eval();
   printf("evaluation result: %d\n", res);
 
-  InitializeModule();
-  llvm::Value* v = exp->codegen();
-  MakeTopLevel(v);
+  //InitializeModule();
+  //llvm::Value* v = exp->codegen();
+  //MakeTopLevel(v);
   // TODO: control constant folding?
-  DumpCode();
+  //DumpCode();
   // TODO write llvm code to file, for external compilation & execution
   // TODO JIT compile and execute
 }

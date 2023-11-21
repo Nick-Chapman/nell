@@ -1,4 +1,5 @@
 
+#include "misc.h"
 #include "ast.h"
 #include <map>
 #include "misc.h"
@@ -10,15 +11,15 @@
 using namespace llvm;
 
 // TODO: move to own context type instead of top level statics
-static std::unique_ptr<LLVMContext> TheContext;
-static std::unique_ptr<IRBuilder<>> Builder;
-static std::unique_ptr<Module> TheModule;
+static up<LLVMContext> TheContext;
+static up<IRBuilder<>> Builder;
+static up<Module> TheModule;
 static std::map<std::string, Value *> NamedValues;
 
 void InitializeModule() {
-  TheContext = std::make_unique<LLVMContext>();
-  TheModule = std::make_unique<Module>("TheModule", *TheContext);
-  Builder = std::make_unique<IRBuilder<>>(*TheContext);
+  TheContext = mk<LLVMContext>();
+  TheModule = mk<Module>("TheModule", *TheContext);
+  Builder = mk<IRBuilder<>>(*TheContext);
 
   // TODO: drive function codegen from AST
   Type* D = Type::getInt16Ty(*TheContext);
@@ -71,6 +72,10 @@ Value* Mul::codegen() {
   auto R = right->codegen();
   auto res = Builder->CreateMul(L, R, "multmp");
   return res;
+}
+
+Value* Call1::codegen() {
+  crash
 }
 
 Value* Sub::codegen() {

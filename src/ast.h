@@ -3,8 +3,7 @@
 
 #include <string>
 #include <memory>
-
-#define up std::unique_ptr // TODO: bad idiom?
+#include "misc.h"
 
 namespace llvm {
   class Value;
@@ -12,22 +11,24 @@ namespace llvm {
 
 // TODO: use "ast" namespace?
 
+typedef std::string Name;
+
+class Env;
+
 class Exp {
 public:
   virtual ~Exp() = default;
-  virtual int eval() = 0;
+  virtual int eval(Env&) = 0;
   virtual std::string pp() = 0;
   virtual llvm::Value* codegen() = 0;
 };
 
-// TODO: Vars: in first case will be inputs to TheFunction
-
 class Var : public Exp {
 private:
-  std::string name;
+  Name name;
 public:
-  Var (std::string name) : name(name) {}
-  int eval() override;
+  Var (Name name) : name(name) {}
+  int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
 };
@@ -37,7 +38,7 @@ private:
   int num;
 public:
   Num (int num) : num(num) {}
-  int eval() override;
+  int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
 };
@@ -48,9 +49,9 @@ private:
   up<Exp> right;
 public:
   Mul (up<Exp> left, up<Exp> right)
-    : left(std::move(left)), right(std::move(right))
+    : left(mv(left)), right(mv(right))
   {}
-  int eval() override;
+  int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
 };
@@ -61,13 +62,43 @@ private:
   up<Exp> right;
 public:
   Sub (up<Exp> left, up<Exp> right)
-    : left(std::move(left)), right(std::move(right))
+    : left(mv(left)), right(mv(right))
   {}
-  int eval() override;
+  int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
 };
 
-// TODO: Ast for top level function defs
+class Call1 : public Exp {
+  Name func;
+  up<Exp> arg; // TODO: many args
+public:
+  Call1(Name func, up<Exp> arg) : func(func), arg(mv(arg)) {}
+  int eval(Env&) override;
+  std::string pp() override;
+  llvm::Value* codegen() override;
+};
+
+class Def {
+public:
+  Name name;
+private:
+  Name formal; // TODO: many formals
+  up<Exp> body;
+public:
+  Def(Name name, Name formal, up<Exp> body)
+    : name(name), formal(formal), body(mv(body)) {}
+  std::string pp();
+  int apply(Env&,int);
+};
+
+class Prog {
+  up<Def> theDef; // TODO: many defs
+  up<Exp> main;
+public:
+  Prog(up<Def> theDef, up<Exp> main) : theDef(mv(theDef)), main(mv(main)) {}
+  std::string pp();
+  int eval();
+};
 
 #endif // AST_H
