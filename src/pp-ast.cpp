@@ -32,13 +32,14 @@ std::string ppExps(std::vector<up<Exp>>& xs) {
   return acc;
 }
 
-std::string Call1::pp() {
+std::string Call::pp() {
   return func + "(" + ppExps(args) + ")";
 }
 
 std::string ppNames(std::vector<Name> xs) {
   std::string acc = "";
   bool first = true;
+
   for (auto &x : xs) {
     if (!first) {
       acc = acc + ",";
@@ -50,9 +51,22 @@ std::string ppNames(std::vector<Name> xs) {
 }
 
 std::string Def::pp() {
-  return "def " + name + "(" + ppNames(formals) + "):\n  " + body->pp() + ";\n\n";
+  return "def " + name + "(" + ppNames(formals) + "):\n  " + body->pp() + ";";
+}
+
+std::string ppDefs(std::vector<up<Def>>& xs) {
+  std::string acc = "";
+  bool first = true;
+  for (auto &x : xs) {
+    if (!first) {
+      acc = acc + "\n\n";
+    }
+    acc = acc + x->pp();
+    first = false;
+  }
+  return acc;
 }
 
 std::string Prog::pp() {
-  return theDef->pp() + "main: " + main->pp();
+  return ppDefs(theDefs) + "\n\nmain: " + main->pp();
 }

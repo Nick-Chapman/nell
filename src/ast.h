@@ -16,6 +16,8 @@ typedef std::string Name;
 
 class Env;
 
+// TODO: use upper case names for members
+
 class Exp {
 public:
   virtual ~Exp() = default;
@@ -70,11 +72,11 @@ public:
   llvm::Value* codegen() override;
 };
 
-class Call1 : public Exp {
+class Call : public Exp {
   Name func;
   std::vector<up<Exp>> args;
 public:
-  Call1(Name func, std::vector<up<Exp>> args) : func(func), args(mv(args)) {}
+  Call(Name func, std::vector<up<Exp>> args) : func(func), args(mv(args)) {}
   int eval(Env&) override;
   std::string pp() override;
   llvm::Value* codegen() override;
@@ -94,10 +96,11 @@ public:
 };
 
 class Prog {
-  up<Def> theDef; // TODO: many defs
+  std::vector<up<Def>> theDefs;
   up<Exp> main;
 public:
-  Prog(up<Def> theDef, up<Exp> main) : theDef(mv(theDef)), main(mv(main)) {}
+  Prog(std::vector<up<Def>> theDefs, up<Exp> main)
+    : theDefs(mv(theDefs)), main(mv(main)) {}
   std::string pp();
   int eval();
 };

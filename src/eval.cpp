@@ -34,10 +34,10 @@ int Sub::eval(Env& env) {
   return L - R;
 }
 
-int Call1::eval(Env& env) {
+int Call::eval(Env& env) {
   Def* D = env.defBinds[func];
   if (!D) {
-    printf("Call1: no such function: %s\n",func.c_str());
+    printf("Call: no such function: %s\n",func.c_str());
     crash
   }
   std::vector<int> AS;
@@ -62,7 +62,9 @@ int Def::apply(Env& env0, std::vector<int> actuals) {
 
 int Prog::eval() {
   Env env;
-  env.defBinds[theDef->name] = &(*theDef);
+  for (auto &def : theDefs) {
+    env.defBinds[def->name] = &(*def);
+  }
   auto res = main->eval(env);
   return res;
 }

@@ -74,7 +74,7 @@ Value* Mul::codegen() {
   return res;
 }
 
-Value* Call1::codegen() {
+Value* Call::codegen() {
   crash
 }
 
