@@ -1,7 +1,20 @@
 
 #include "example.h"
 
-// TODO: recursion: fib, fact
+up<Def> make_fact() {
+  std::vector<Name> formals;
+  formals.push_back("n");
+  std::vector<up<Exp>> nestArgs;
+  nestArgs.push_back(mk<Sub>(mk<Var>("n"),mk<Num>(1)));
+  auto body =
+    mk<Ite>
+    (mk<LessThan>(mk<Var>("n"),mk<Num>(1)),
+     mk<Num>(1),
+     mk<Mul>(mk<Var>("n"),mk<Call>("fact",mv(nestArgs))));
+  return mk<Def>("fact",formals,mv(body));
+}
+
+// TODO: fib
 
 up<Def> make_absdiff() {
   std::vector<Name> formals;
@@ -33,29 +46,14 @@ up<Def> make_quad() {
   return mk<Def>("quad",formals,mv(outer));
 }
 
-up<Def> make_f1() {
-  std::vector<Name> formals;
-  formals.push_back("x");
-  formals.push_back("y");
-
-  std::vector<up<Exp>> args;
-  args.push_back(mk<Var>("y"));
-  auto e = mk<Call>("square",mv(args));
-
-  auto body =
-    mk<Sub>(mk<Add>(mk<Var>("x"),mv(e)),
-            mk<Num>(1));
-  return mk<Def>("f1",formals,mv(body));
-}
-
 up<Prog> make_prog() {
   std::vector<up<Def>> defs;
   defs.push_back(make_absdiff());
   defs.push_back(make_square());
   defs.push_back(make_quad());
-  defs.push_back(make_f1());
+  defs.push_back(make_fact());
   std::vector<up<Exp>> args;
-  args.push_back(mk<Num>(3));
-  auto main = mk<Call>("quad",mv(args));
+  args.push_back(mk<Num>(6));
+  auto main = mk<Call>("fact",mv(args));
   return mk<Prog>(mv(defs),mv(main));
 }
