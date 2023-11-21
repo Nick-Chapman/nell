@@ -59,6 +59,19 @@ public:
   llvm::Value* codegen() override;
 };
 
+class Add : public Exp {
+private:
+  up<Exp> AddLeft;
+  up<Exp> AddRight;
+public:
+  Add (up<Exp> AddLeft, up<Exp> AddRight)
+    : AddLeft(mv(AddLeft)), AddRight(mv(AddRight))
+  {}
+  int eval(Env&) override;
+  std::string pp() override;
+  llvm::Value* codegen() override;
+};
+
 class Sub : public Exp {
 private:
   up<Exp> SubLeft;

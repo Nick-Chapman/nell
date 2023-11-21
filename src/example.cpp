@@ -5,23 +5,23 @@
 
 up<Def> make_square() {
   std::vector<Name> formals;
-  formals.push_back("x1");
+  formals.push_back("x");
   return
     mk<Def>("square",formals,
-            mk<Mul>(mk<Var>("x1"),mk<Var>("x1")));
+            mk<Mul>(mk<Var>("x"),mk<Var>("x")));
 }
 
 up<Def> make_f1() {
   std::vector<Name> formals;
-  formals.push_back("x1");
-  formals.push_back("x2");
+  formals.push_back("x");
+  formals.push_back("y");
 
   std::vector<up<Exp>> args;
-  args.push_back(mk<Var>("x2"));
+  args.push_back(mk<Var>("y"));
   auto e = mk<Call>("square",mv(args));
 
   auto body =
-    mk<Sub>(mk<Mul>(mk<Var>("x1"),mv(e)),
+    mk<Sub>(mk<Add>(mk<Var>("x"),mv(e)),
             mk<Num>(1));
   return mk<Def>("f1",formals,mv(body));
 }

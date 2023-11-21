@@ -28,6 +28,12 @@ int Mul::eval(Env& env) {
   return L * R;
 }
 
+int Add::eval(Env& env) {
+  int L = AddLeft->eval(env);
+  int R = AddRight->eval(env);
+  return L + R;
+}
+
 int Sub::eval(Env& env) {
   int L = SubLeft->eval(env);
   int R = SubRight->eval(env);

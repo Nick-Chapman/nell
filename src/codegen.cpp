@@ -74,7 +74,7 @@ Value* Mul::codegen() {
   return res;
 }
 
-Value* Call::codegen() {
+Value* Add::codegen() {
   crash
 }
 
@@ -83,4 +83,8 @@ Value* Sub::codegen() {
   auto R = SubRight->codegen();
   auto res = Builder->CreateSub(L, R, "subtmp");
   return res;
+}
+
+Value* Call::codegen() {
+  crash
 }

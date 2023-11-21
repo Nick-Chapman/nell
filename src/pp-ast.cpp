@@ -15,6 +15,10 @@ std::string Mul::pp() {
   return "(" + MulLeft->pp() + " * " + MulRight->pp() + ")";
 }
 
+std::string Add::pp() {
+  return "(" + AddLeft->pp() + " + " + AddRight->pp() + ")";
+}
+
 std::string Sub::pp() {
   return "(" + SubLeft->pp() + " - " + SubRight->pp() + ")";
 }
