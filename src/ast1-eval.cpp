@@ -1,9 +1,42 @@
 
-#include "ast0.h"
+#include "ast1-impl.h"
 #include "misc.h"
 #include <map>
 
-namespace ast0 {
+namespace ast1 {
+
+  // int Num::eval(Env& env) {
+  //   crash
+  // }
+
+  // int Var::eval(Env& env) {
+  //   crash
+  // }
+
+  // int Mul::eval(Env& env) {
+  //   crash
+  // }
+
+  // int Add::eval(Env& env) {
+  //   crash
+  // }
+
+  // int Sub::eval(Env& env) {
+  //   crash
+  // }
+
+  // int LessThan::eval(Env& env) {
+  //   crash
+  // }
+
+  // int Ite::eval(Env& env) {
+  //   crash
+  // }
+
+  // int Call::eval(Env& env) {
+  //   crash
+  // }
+
 
   struct Env {
     std::map<std::string, Def*> defBinds;
@@ -24,34 +57,34 @@ namespace ast0 {
   }
 
   int Mul::eval(Env& env) {
-    int L = MulLeft->eval(env);
-    int R = MulRight->eval(env);
+    int L = MulLeft.eval(env);
+    int R = MulRight.eval(env);
     return L * R;
   }
 
   int Add::eval(Env& env) {
-    int L = AddLeft->eval(env);
-    int R = AddRight->eval(env);
+    int L = AddLeft.eval(env);
+    int R = AddRight.eval(env);
     return L + R;
   }
 
   int Sub::eval(Env& env) {
-    int L = SubLeft->eval(env);
-    int R = SubRight->eval(env);
+    int L = SubLeft.eval(env);
+    int R = SubRight.eval(env);
     return L - R;
   }
 
   int LessThan::eval(Env& env) {
-    int L = LessThanLeft->eval(env);
-    int R = LessThanRight->eval(env);
+    int L = LessThanLeft.eval(env);
+    int R = LessThanRight.eval(env);
     return L < R;
   }
 
   int Ite::eval(Env& env) {
-    if (IteCond->eval(env)) {
-      return IteThen->eval(env);
+    if (IteCond.eval(env)) {
+      return IteThen.eval(env);
     } else {
-      return IteElse->eval(env);
+      return IteElse.eval(env);
     }
   }
 
@@ -77,12 +110,12 @@ namespace ast0 {
     for (unsigned i=0; i < DefFormals.size(); i++) {
       env.argBinds[DefFormals[i]] = &actuals[i];
     }
-    return DefBody->eval(env);
+    return DefBody.eval(env);
   }
 
-  int Prog::eval() {
+  int eval(Prog& prog) {
     Env env;
-    for (auto &def : ProgDefs) {
+    for (auto &def : prog.ProgDefs) {
       env.defBinds[def->DefName] = &(*def);
     }
     Def* Main = env.defBinds["main"];

@@ -1,10 +1,11 @@
-#ifndef AST_H
-#define AST_H
+#ifndef AST0_H
+#define AST0_H
 
 #include <string>
 #include <memory>
 #include <vector>
 #include "misc.h"
+#include "ast1.h"
 
 namespace llvm {
   class Value;
@@ -24,6 +25,7 @@ namespace ast0 {
     virtual int eval(Env&) = 0; // eval.cpp
     virtual std::string pp() = 0; // pp-ast.cpp
     virtual llvm::Value* codegen(DefCon&) = 0; // codegen.cpp
+    virtual ast1::Exp& convAst1(ast1::Gen&) = 0; // ast0-convToAst1.cpp
   };
 
   class Var : public Exp {
@@ -34,6 +36,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Num : public Exp {
@@ -44,6 +47,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Mul : public Exp {
@@ -57,6 +61,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Add : public Exp {
@@ -70,6 +75,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Sub : public Exp {
@@ -83,6 +89,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class LessThan : public Exp {
@@ -96,6 +103,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Ite : public Exp {
@@ -112,6 +120,7 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Call : public Exp {
@@ -123,12 +132,13 @@ namespace ast0 {
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
+    ast1::Exp& convAst1(ast1::Gen&) override;
   };
 
   class Def {
   public:
     Name DefName;
-  private:
+    //private:
     std::vector<Name> DefFormals;
     up<Exp> DefBody;
   public:
@@ -146,8 +156,10 @@ namespace ast0 {
     Prog(std::vector<up<Def>> ProgDefs) : ProgDefs(mv(ProgDefs)) {}
     std::string pp();
     int eval();
+    ast1::Prog& toAst1(ast1::Gen&);
   };
 
+  void codegen(Prog&);
 }
 
-#endif // AST_H
+#endif // AST0_H

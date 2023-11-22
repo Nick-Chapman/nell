@@ -1,5 +1,5 @@
 
-top: genall
+top: runall
 
 examples = everything quad fact fib
 
