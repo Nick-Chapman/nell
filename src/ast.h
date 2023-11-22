@@ -10,9 +10,9 @@ namespace llvm {
   class Value;
 }
 
-typedef std::string Name; // TODO: move into ast namespace
-
 namespace ast {
+
+  typedef std::string Name;
 
   class Env; // eval.cpp
   class TopCon; // codegen.cpp
@@ -30,7 +30,7 @@ namespace ast {
   private:
     Name VarName;
   public:
-    Var (::Name VarName) : VarName(VarName) {}
+    Var (Name VarName) : VarName(VarName) {}
     int eval(Env&) override;
     std::string pp() override;
     llvm::Value* codegen(DefCon&) override;
