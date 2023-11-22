@@ -10,7 +10,7 @@ namespace llvm {
   class Value;
 }
 
-namespace ast {
+namespace ast0 {
 
   typedef std::string Name;
 

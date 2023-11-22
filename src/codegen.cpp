@@ -1,6 +1,6 @@
 
 #include "misc.h"
-#include "ast.h"
+#include "ast0.h"
 #include <map>
 #include "misc.h"
 #include "llvm/IR/Constants.h"
@@ -11,7 +11,7 @@
 
 using namespace llvm;
 
-namespace ast {
+namespace ast0 {
 
   struct TopCon {
     LLVMContext& context;

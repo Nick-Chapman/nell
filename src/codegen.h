@@ -1,6 +1,6 @@
 
-#include "ast.h"
+#include "ast0.h"
 
-namespace ast {
-  void codegen(ast::Prog&);
+namespace ast0 {
+  void codegen(Prog&);
 }

@@ -1,9 +1,9 @@
 
-#include "ast.h"
+#include "ast0.h"
 #include "misc.h"
 #include <vector>
 
-namespace ast {
+namespace ast0 {
 
   std::string Var::pp() {
     return VarName;

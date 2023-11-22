@@ -2,7 +2,7 @@
 #include "example.h"
 #include "misc.h"
 
-using namespace ast;
+using namespace ast0;
 
 up<Def> def_absdiff() {
   std::vector<Name> formals;

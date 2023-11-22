@@ -1,9 +1,9 @@
 
-#include "ast.h"
+#include "ast0.h"
 #include "misc.h"
 #include <map>
 
-namespace ast {
+namespace ast0 {
 
   struct Env {
     std::map<std::string, Def*> defBinds;

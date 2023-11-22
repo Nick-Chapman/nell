@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string>
 #include <memory>
-#include "ast.h"
+#include "ast0.h"
 #include "misc.h"
 #include "example.h"
 #include "codegen.h"
