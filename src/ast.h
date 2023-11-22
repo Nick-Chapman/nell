@@ -14,6 +14,8 @@ namespace llvm {
 
 typedef std::string Name;
 
+namespace ast {
+
 class Env; // eval.cpp
 
 class TopCon; // codegen.cpp
@@ -149,4 +151,5 @@ public:
   int eval();
 };
 
+}
 #endif // AST_H

@@ -2,6 +2,8 @@
 #include "example.h"
 #include "misc.h"
 
+using namespace ast;
+
 up<Def> def_absdiff() {
   std::vector<Name> formals;
   formals.push_back("x");

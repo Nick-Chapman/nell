@@ -11,6 +11,8 @@
 
 using namespace llvm;
 
+namespace ast {
+
 struct TopCon {
   LLVMContext& context;
   IRBuilder<>& builder;
@@ -150,4 +152,6 @@ void codegen(Prog& prog) {
   }
   // dump...
   module.print(errs(), nullptr);
+}
+
 }

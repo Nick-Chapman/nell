@@ -1,4 +1,6 @@
 
 #include "ast.h"
 
-void codegen(Prog&);
+namespace ast {
+  void codegen(ast::Prog&);
+}

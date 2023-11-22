@@ -3,6 +3,8 @@
 #include "misc.h"
 #include <vector>
 
+namespace ast {
+
 std::string Var::pp() {
   return VarName;
 }
@@ -83,4 +85,6 @@ std::string ppDefs(std::vector<up<Def>>& xs) {
 
 std::string Prog::pp() {
   return ppDefs(ProgDefs);
+}
+
 }

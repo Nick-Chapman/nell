@@ -3,6 +3,8 @@
 #include "misc.h"
 #include <map>
 
+namespace ast {
+
 struct Env {
   std::map<std::string, Def*> defBinds;
   std::map<std::string, int*> argBinds;
@@ -90,4 +92,6 @@ int Prog::eval() {
   }
   std::vector<int> AS;
   return Main->apply(env,AS);
+}
+
 }
