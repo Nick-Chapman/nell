@@ -1,4 +1,4 @@
 
 #include "ast.h"
 
-up<Prog> make_prog();
+up<Prog> prog_example(std::string);

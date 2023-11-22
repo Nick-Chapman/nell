@@ -1,7 +1,8 @@
 
 #include "example.h"
+#include "misc.h"
 
-up<Def> make_absdiff() {
+up<Def> def_absdiff() {
   std::vector<Name> formals;
   formals.push_back("x");
   formals.push_back("y");
@@ -11,7 +12,7 @@ up<Def> make_absdiff() {
   return mk<Def>("absdiff",formals,mv(body));
 }
 
-up<Def> make_square() {
+up<Def> def_square() {
   std::vector<Name> formals;
   formals.push_back("x");
   return
@@ -19,7 +20,7 @@ up<Def> make_square() {
             mk<Mul>(mk<Var>("x"),mk<Var>("x")));
 }
 
-up<Def> make_quad() {
+up<Def> def_quad() {
   std::vector<Name> formals;
   formals.push_back("x");
   std::vector<up<Exp>> innerArgs;
@@ -31,7 +32,7 @@ up<Def> make_quad() {
   return mk<Def>("quad",formals,mv(outer));
 }
 
-up<Def> make_fact() {
+up<Def> def_fact() {
   std::vector<Name> formals;
   formals.push_back("n");
   std::vector<up<Exp>> nestArgs;
@@ -43,7 +44,7 @@ up<Def> make_fact() {
   return mk<Def>("fact",formals,mv(body));
 }
 
-up<Def> make_fib() {
+up<Def> def_fib() {
   std::vector<Name> formals;
   formals.push_back("n");
   std::vector<up<Exp>> leftArgs;
@@ -58,21 +59,55 @@ up<Def> make_fib() {
   return mk<Def>("fib",formals,mv(body));
 }
 
-up<Def> make_main() {
+up<Def> main_of_expression(up<Exp> body) {
   std::vector<Name> formals;
-  std::vector<up<Exp>> args;
-  args.push_back(mk<Num>(11));
-  auto body = mk<Call>("fib",mv(args));
   return mk<Def>("main",formals,mv(body));
 }
 
-up<Prog> make_prog() {
+up<Exp> make_call1(Name name, up<Exp> arg) {
+  std::vector<up<Exp>> args;
+  args.push_back(mv(arg));
+  return mk<Call>(name,mv(args));
+}
+
+up<Prog> prog_everything() {
   std::vector<up<Def>> defs;
-  defs.push_back(make_absdiff());
-  defs.push_back(make_quad());
-  defs.push_back(make_square());
-  defs.push_back(make_fact());
-  defs.push_back(make_fib());
-  defs.push_back(make_main());
+  defs.push_back(def_absdiff());
+  defs.push_back(def_quad());
+  defs.push_back(def_square());
+  defs.push_back(def_fact());
+  defs.push_back(def_fib());
+  defs.push_back(main_of_expression(mk<Num>(42)));
   return mk<Prog>(mv(defs));
+}
+
+up<Prog> prog_quad() {
+  std::vector<up<Def>> defs;
+  defs.push_back(def_quad());
+  defs.push_back(def_square());
+  defs.push_back(main_of_expression(make_call1("quad",mk<Num>(3))));
+  return mk<Prog>(mv(defs));
+}
+
+up<Prog> prog_fact() {
+  std::vector<up<Def>> defs;
+  defs.push_back(def_fact());
+  defs.push_back(main_of_expression(make_call1("fact",mk<Num>(4))));
+  return mk<Prog>(mv(defs));
+}
+
+up<Prog> prog_fib() {
+  std::vector<up<Def>> defs;
+  defs.push_back(def_fib());
+  defs.push_back(main_of_expression(make_call1("fib",mk<Num>(11))));
+  return mk<Prog>(mv(defs));
+}
+
+up<Prog> prog_example(std::string name) {
+  if (name == "everything") return prog_everything(); // no main
+  if (name == "quad") return prog_quad();
+  if (name == "fact") return prog_fact();
+  if (name == "fib") return prog_fib();
+  printf("**No such example: %s\n", name.c_str());
+  crash
 }

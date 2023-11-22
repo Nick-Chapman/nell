@@ -1,14 +1,23 @@
 
-top: run
+top: genall
 
-run: _build/out.ll
-	lli $^ ; echo $$?
+examples = everything quad fact fib
 
-see: _build _build/main.exe
-	_build/main.exe
+genall: $(patsubst %, _build/%.ll, $(examples))
+runall: $(patsubst %, run-%, $(examples))
 
-_build/out.ll: _build _build/main.exe
-	_build/main.exe 2> $@ || rm -f $@
+run-%: _build/%.ll
+	@ echo 'Running example: $*'
+	@ lli $^ ; echo $$?
+
+gen-%: _build _build/main.exe
+	@ echo 'View generated code for example: $*'
+	@ _build/main.exe $*
+
+.PRECIOUS:_build/%.ll
+_build/%.ll: _build _build/main.exe
+	@ echo 'Compile example: $*'
+	@ _build/main.exe $* 2> $@ || rm -f $@
 
 #CPP = g++
 CPP = clang++
